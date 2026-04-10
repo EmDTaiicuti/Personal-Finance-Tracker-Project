@@ -1,5 +1,10 @@
 1 01/04/2026 Luong_thang 5000000 1
-2 02/04/2026 Tien_tro 1500000 0
-3 05/04/2026 An_sang 30000 0
-4 08/04/2026 Mua_sach 150000 0
-5 09/04/2026 Lam_them 500000 1
+2 02/04/2026 Tien_tro_thang4 1500000 0
+3 05/04/2026 An_sang_pho 35000 0
+4 06/04/2026 Do_xang 60000 0
+5 08/04/2026 Mua_giao_trinh 150000 0
+6 09/04/2026 Nhan_tien_lam_them 500000 1
+7 10/04/2026 An_trua_cang_tin 40000 0
+8 10/04/2026 Uong_tra_sua 35000 0
+9 11/04/2026 Mua_ao_thun 250000 0
+10 12/04/2026 Ban_lap_trinh_thue 800000 1
