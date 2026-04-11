@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> // thêm thư viện xử lý chuỗi(10/4)
+#include <string.h> // thêm thư viện xử lý chuỗi
 #include "structs.h" 
 
 // khai báo sẵn các chức năng của hàm 
@@ -104,7 +104,48 @@ void loadFromFile(Node** head) {
         printf("\n[*] He thong: Da tai thanh cong %d giao dich tu file!\n", count);
     }
 }
+// hàm ghi dữ liệu từ danh sách liên kết ra file (ghi đè dữ liệu cũ)
+void saveToFile(Node* head) {
+    // mở file ở chế độ "w" (write): xóa sạch dữ liệu cũ và ghi mới lại từ đầu
+    FILE* file = fopen("data.txt", "w"); 
+    if (file == NULL) {
+        printf("\n[!] Loi: Khong the mo file de luu du lieu!\n");
+        return;
+    }
 
+    Node* current = head;
+    int count = 0;
+    
+    // duyệt qua từng node và dùng fprintf để in vào file
+    while (current != NULL) {
+        fprintf(file, "%d %s %s %lld %d\n", 
+                current->data.id, 
+                current->data.date, 
+                current->data.category, 
+                current->data.amount, 
+                current->data.type);
+        current = current->next;
+        count++;
+    }
+
+    fclose(file); // ghi xong thì phải đóng cửa lại
+    printf("\n[*] He thong: Da luu an toan %d giao dich vao file 'data.txt'.\n", count);
+}
+
+// hàm giải phóng bộ nhớ động để tránh rò rỉ bộ nhớ (memory leak) - yêu cầu chương 2
+void freeMemory(Node** head) {
+    Node* current = *head;
+    Node* nextNode;
+    
+    while (current != NULL) {
+        nextNode = current->next; // giữ lại địa chỉ node tiếp theo trước khi xóa
+        free(current);            // tiêu hủy (trả ram) node hiện tại
+        current = nextNode;       // tiến lên node tiếp theo
+    }
+    
+    *head = NULL; // reset danh sách về trống cho an toàn
+    printf("[*] He thong: Da don dep RAM thanh cong (Free Memory).\n");
+}
 // hàm hiển thị danh sách giao dịch dưới dạng bảng
 void displayTransactions(Node* head) {
     // kiểm tra xem danh sách có trống không
