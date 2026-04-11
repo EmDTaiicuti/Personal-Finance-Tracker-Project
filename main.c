@@ -6,13 +6,12 @@
 // khai báo sẵn các chức năng của hàm 
 void addTransaction(Node** head); // đã sửa lỗi thiếu tham số
 void displayTransactions(Node* head); // thêm tham số
-void searchTransaction();
+void searchTransaction(Node* head); // thêm tham số truyền vào
 void deleteTransaction();
 void showStatistics();
 void loadFromFile(Node** head); // thêm tham số
 void saveToFile(Node* head); // thêm tham số
 void freeMemory(Node** head); // khai báo thêm hàm dọn rác
-
 // ==========================================
 // MODULE: DANH SACH LIEN KET & XU LY DU LIEU
 // ==========================================
@@ -184,7 +183,56 @@ void displayTransactions(Node* head) {
     }
     printf("===========================================================================\n");
 }
+// hàm tìm kiếm giao dịch theo danh mục (tìm gần đúng bằng strstr)
+void searchTransaction(Node* head) {
+    // kiểm tra danh sách rỗng
+    if (head == NULL) {
+        printf("\n[!] Danh sach trong, khong co gi de tim!\n");
+        return;
+    }
 
+    char keyword[50];
+    printf("\n--- TIM KIEM GIAO DICH ---\n");
+    printf("Nhap tu khoa danh muc (VD: An, Luong...): ");
+    scanf("%s", keyword);
+
+    // in thanh tiêu đề bảng kết quả
+    printf("\n>>> KET QUA TIM KIEM CHO '%s':\n", keyword);
+    printf("===========================================================================\n");
+    printf("| %-5s | %-12s | %-20s | %-15s | %-6s |\n", "ID", "Ngay", "Danh muc", "So tien (VND)", "Loai");
+    printf("===========================================================================\n");
+
+    Node* current = head;
+    int foundCount = 0; // biến đếm số kết quả tìm được
+
+    // duyệt từ đầu đến cuối danh sách
+    while (current != NULL) {
+        // hàm strstr sẽ kiểm tra xem 'keyword' có nằm trong 'category' không
+        if (strstr(current->data.category, keyword) != NULL) {
+            char typeStr[10];
+            if (current->data.type == 1) strcpy(typeStr, "Thu");
+            else strcpy(typeStr, "Chi");
+
+            // in ra giao dịch khớp với từ khóa
+            printf("| %-5d | %-12s | %-20s | %15lld | %-6s |\n", 
+                   current->data.id, 
+                   current->data.date, 
+                   current->data.category, 
+                   current->data.amount, 
+                   typeStr);
+            foundCount++;
+        }
+        current = current->next; // đi tới node tiếp theo
+    }
+    printf("===========================================================================\n");
+
+    // thông báo nếu không tìm thấy gì
+    if (foundCount == 0) {
+        printf("[!] Khong tim thay giao dich nao khop voi tu khoa '%s'.\n", keyword);
+    } else {
+        printf("=> Tim thay %d giao dich.\n", foundCount);
+    }
+}
 void showMenu() {
     printf("\n========================================\n");
     printf("      QUAN LY THU CHI CA NHAN\n");
@@ -225,8 +273,7 @@ int main() {
                 displayTransactions(head); // gọi hàm hiển thị
                 break;
             case 3:
-                printf("\n>>> Chuc nang 'Tim kiem' dang duoc phat trien...\n");
-                // searchTransaction();
+                searchTransaction(head); // gọi hàm tìm kiếm
                 break;
             case 4:
                 printf("\n>>> Chuc nang 'Xoa' dang duoc phat trien...\n");
