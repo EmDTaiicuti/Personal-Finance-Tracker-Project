@@ -10,7 +10,8 @@ void searchTransaction();
 void deleteTransaction();
 void showStatistics();
 void loadFromFile(Node** head); // thêm tham số
-void saveToFile();
+void saveToFile(Node* head); // thêm tham số
+void freeMemory(Node** head); // khai báo thêm hàm dọn rác
 
 // ==========================================
 // MODULE: DANH SACH LIEN KET & XU LY DU LIEU
@@ -236,8 +237,9 @@ int main() {
                 // showStatistics();
                 break;
             case 6:
-                printf("\n>>> Dang luu du lieu... Tam biet!\n");
-                // saveToFile();
+                printf("\n>>> Dang luu du lieu va don dep he thong... Tam biet!\n");
+                saveToFile(head);      // gọi hàm lưu file
+                freeMemory(&head);     // gọi hàm dọn rác ram
                 break;
             default:
                 printf("\n[!] Lua chon khong hop le! Vui long chon tu 1 den 6.\n");
