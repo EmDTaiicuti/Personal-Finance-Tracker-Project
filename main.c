@@ -7,7 +7,7 @@
 void addTransaction(Node** head); // đã sửa lỗi thiếu tham số
 void displayTransactions(Node* head); // thêm tham số
 void searchTransaction(Node* head); // thêm tham số truyền vào
-void deleteTransaction();
+void deleteTransaction(Node** head); // thêm tham số con trỏ bậc 2
 void showStatistics();
 void loadFromFile(Node** head); // thêm tham số
 void saveToFile(Node* head); // thêm tham số
@@ -233,6 +233,51 @@ void searchTransaction(Node* head) {
         printf("=> Tim thay %d giao dich.\n", foundCount);
     }
 }
+// hàm xóa giao dịch theo mã ID
+void deleteTransaction(Node** head) {
+    // kiểm tra danh sách rỗng
+    if (*head == NULL) {
+        printf("\n[!] Danh sach trong, khong co gi de xoa!\n");
+        return;
+    }
+
+    int deleteId;
+    printf("\n--- XOA GIAO DICH ---\n");
+    printf("Nhap Ma ID cua giao dich can xoa: ");
+    if (scanf("%d", &deleteId) != 1) {
+        printf("[!] Loi: ID phai la so nguyen!\n");
+        while(getchar() != '\n'); // dọn dẹp bộ nhớ đệm nếu nhập sai
+        return;
+    }
+
+    Node* current = *head;
+    Node* prev = NULL;
+
+    // trường hợp 1: node cần xóa nằm ngay đầu danh sách (chính là head)
+    if (current != NULL && current->data.id == deleteId) {
+        *head = current->next; // dời head sang node thứ 2
+        free(current);         // trả ram của node cũ
+        printf("=> Da xoa thanh cong giao dich co ID: %d\n", deleteId);
+        return;
+    }
+
+    // trường hợp 2: tìm node cần xóa ở đoạn giữa hoặc cuối danh sách
+    while (current != NULL && current->data.id != deleteId) {
+        prev = current;          // prev đi sau lưu dấu vết
+        current = current->next; // current đi trước dò tìm
+    }
+
+    // nếu duyệt đến cuối (null) mà vẫn không tìm thấy ID
+    if (current == NULL) {
+        printf("[!] Khong tim thay giao dich voi ID: %d\n", deleteId);
+        return;
+    }
+
+    // thuật toán xóa: ngắt kết nối node hiện tại, nối node trước với node sau
+    prev->next = current->next;
+    free(current); // tiêu hủy node cần xóa
+    printf("=> Da xoa thanh cong giao dich co ID: %d\n", deleteId);
+}
 void showMenu() {
     printf("\n========================================\n");
     printf("      QUAN LY THU CHI CA NHAN\n");
@@ -275,9 +320,8 @@ int main() {
             case 3:
                 searchTransaction(head); // gọi hàm tìm kiếm
                 break;
-            case 4:
-                printf("\n>>> Chuc nang 'Xoa' dang duoc phat trien...\n");
-                // deleteTransaction();
+         case 4:
+                deleteTransaction(&head); // gọi hàm xóa (truyền địa chỉ)
                 break;
             case 5:
                 printf("\n>>> Chuc nang 'Thong ke' dang duoc phat trien...\n");
