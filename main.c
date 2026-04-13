@@ -8,7 +8,7 @@ void addTransaction(Node** head); // đã sửa lỗi thiếu tham số
 void displayTransactions(Node* head); // thêm tham số
 void searchTransaction(Node* head); // thêm tham số truyền vào
 void deleteTransaction(Node** head); // thêm tham số con trỏ bậc 2
-void showStatistics();
+void showStatistics(Node** head);// 
 void loadFromFile(Node** head); // thêm tham số
 void saveToFile(Node* head); // thêm tham số
 void freeMemory(Node** head); // khai báo thêm hàm dọn rác
