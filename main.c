@@ -278,6 +278,47 @@ void deleteTransaction(Node** head) {
     free(current); // tiêu hủy node cần xóa
     printf("=> Da xoa thanh cong giao dich co ID: %d\n", deleteId);
 }
+// hàm đệ quy tính tổng tiền theo loại (1: Thu, 0: Chi) - yêu cầu chương 2
+long long calculateTotalRecursive(Node* head, int type) {
+    // điều kiện dừng của đệ quy: nếu danh sách hết thì trả về 0
+    if (head == NULL) return 0;
+
+    long long currentAmount = 0;
+    if (head->data.type == type) {
+        currentAmount = head->data.amount;
+    }
+
+    // gọi đệ quy: tổng = tiền hiện tại + tổng của phần còn lại
+    return currentAmount + calculateTotalRecursive(head->next, type);
+}
+
+// hàm hiển thị báo cáo tài chính tổng hợp
+void showStatistics(Node* head) {
+    if (head == NULL) {
+        printf("\n[!] Danh sach trong, khong co du lieu de thong ke!\n");
+        return;
+    }
+
+    // gọi hàm đệ quy để tính toán
+    long long totalIncome = calculateTotalRecursive(head, 1); // Tổng Thu
+    long long totalExpense = calculateTotalRecursive(head, 0); // Tổng Chi
+    long long balance = totalIncome - totalExpense;           // Số dư
+
+    printf("\n========================================\n");
+    printf("        BAO CAO TAI CHINH TONG HOP\n");
+    printf("========================================\n");
+    printf(" 1. Tong thu nhap:  %15lld VND\n", totalIncome);
+    printf(" 2. Tong chi tieu:  %15lld VND\n", totalExpense);
+    printf("----------------------------------------\n");
+    printf(" => SO DU HIEN TAI: %15lld VND\n", balance);
+    
+    if (balance < 0) {
+        printf(" [!] Canh bao: Ban dang chi tieu vuot muc thu nhap!\n");
+    } else {
+        printf(" [*] Trang thai: Tai chinh on dinh.\n");
+    }
+    printf("========================================\n");
+}
 void showMenu() {
     printf("\n========================================\n");
     printf("      QUAN LY THU CHI CA NHAN\n");
@@ -323,9 +364,8 @@ int main() {
          case 4:
                 deleteTransaction(&head); // gọi hàm xóa (truyền địa chỉ)
                 break;
-            case 5:
-                printf("\n>>> Chuc nang 'Thong ke' dang duoc phat trien...\n");
-                // showStatistics();
+        case 5:
+                showStatistics(head); // gọi hàm thống kê
                 break;
             case 6:
                 printf("\n>>> Dang luu du lieu va don dep he thong... Tam biet!\n");
