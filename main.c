@@ -3,6 +3,16 @@
 #include <string.h> // thêm thư viện xử lý chuỗi
 #include "structs.h" 
 
+// ==========================================
+// THIET KE GIAO DIEN (Màu ANSI)
+// ==========================================
+#define RESET   "\033[0m"       // Trả về màu mặc định
+#define RED     "\033[1;31m"    // Đỏ (Dùng cho báo lỗi và Tiền Chi)
+#define GREEN   "\033[1;32m"    // Xanh lá (Dùng cho thành công và Tiền Thu)
+#define YELLOW  "\033[1;33m"    // Vàng (Dùng cho Tiêu đề)
+#define CYAN    "\033[1;36m"    // Xanh lơ (Dùng cho Khung viền bảng)
+#define BOLD    "\033[1m"       // In đậm
+
 // khai báo sẵn các chức năng của hàm 
 void addTransaction(Node** head); // đã sửa lỗi thiếu tham số
 void displayTransactions(Node* head); // thêm tham số
@@ -30,41 +40,48 @@ Node* createNode(Transaction t) {
 }
 
 // hàm thêm giao dịch do người dùng nhập vào Danh sách (Thêm vào cuối - Insert at Tail)
-void addTransaction(Node** head) {
-    Transaction t;
-    printf("\n--- NHAP THONG TIN GIAO DICH MOI ---\n");
+Transaction t;
+    printf(YELLOW "\n--- NHAP THONG TIN GIAO DICH MOI ---\n" RESET);
     
-    // nhập liệu cơ bản (tutu chưa code xong hihi )
-    printf("Nhap Ma ID (so nguyen): "); 
-    scanf("%d", &t.id);
+    printf("Nhap Ma ID (so nguyen): "); scanf("%d", &t.id);
+    printf("Nhap Ngay (DD/MM/YYYY): "); scanf("%s", t.date);
     
-    printf("Nhap Ngay (DD/MM/YYYY): "); 
-    scanf("%s", t.date);
+    // Giao diện chọn nhanh Danh mục (Chống lười)
+    printf(CYAN "\n   --- CHON DANH MUC ---\n" RESET);
+    printf("   1. An uong\n");
+    printf("   2. Tien nha / Sinh hoat\n");
+    printf("   3. Mua sam / Giai tri\n");
+    printf("   4. Luong / Thu nhap\n");
+    printf("   5. Danh muc khac...\n");
+    printf("-> Chon so (1-5): ");
     
-    printf("Nhap Danh muc (VD: An_uong, Luong): "); 
-    scanf("%s", t.category);
+    int catChoice;
+    scanf("%d", &catChoice);
+    switch(catChoice) {
+        case 1: strcpy(t.category, "An_uong"); break;
+        case 2: strcpy(t.category, "Sinh_hoat"); break;
+        case 3: strcpy(t.category, "Mua_sam"); break;
+        case 4: strcpy(t.category, "Thu_nhap"); break;
+        default: 
+            printf("Nhap ten danh muc tu do (khong dau cach): ");
+            scanf("%s", t.category);
+    }
     
-    printf("Nhap So tien (VNĐ): "); 
-    scanf("%lld", &t.amount);
-    
-    printf("Loai giao dich (1 la Thu, 0 la Chi): "); 
-    scanf("%d", &t.type);
+    printf("Nhap So tien (VND): "); scanf("%lld", &t.amount);
+    printf("Loai giao dich (1 la Thu, 0 la Chi): "); scanf("%d", &t.type);
 
+    // ... (Phần logic gắn Node vào danh sách giữ nguyên như cũ) ...
     // gọi máy tạo node
     Node* newNode = createNode(t);
-
-    // thuật toán gắn node vào danh sách liên kết
-    if (*head == NULL) {
-        // nếu danh sách đang trống, Node mới chính là Head
-        *head = newNode;
-    } else {
-        // nếu danh sách đã có người, chạy từ đầu đến cuối hàng để xếp hàng
+    if (*head == NULL) *head = newNode;
+    else {
         Node* temp = *head;
-        while (temp->next != NULL) {
-            temp = temp->next;
-        }
-        temp->next = newNode; // gắn vào đuôi
+        while (temp->next != NULL) temp = temp->next;
+        temp->next = newNode;
     }
+    
+    printf(GREEN "\n=> Da them giao dich [%s] thanh cong!\n" RESET, t.category);
+}
     
     printf("\n=> Tinh tong... Da them giao dich [%s] thanh cong!\n", t.category);
 }
@@ -146,30 +163,35 @@ void freeMemory(Node** head) {
     *head = NULL; // reset danh sách về trống cho an toàn
     printf("[*] He thong: Da don dep RAM thanh cong (Free Memory).\n");
 }
-// hàm hiển thị danh sách giao dịch dưới dạng bảng
+// hàm hiển thị danh sách giao dịch dưới dạng bảng (Giao diện mới)
 void displayTransactions(Node* head) {
-    // kiểm tra xem danh sách có trống không
     if (head == NULL) {
-        printf("\n[!] Danh sach giao dich hien dang trong! Vui long them moi.\n");
-        return; // thoát hàm luôn
+        printf(RED "\n[!] Danh sach giao dich hien dang trong!\n" RESET);
+        return;
     }
 
-    // in thanh tiêu đề của bảng
-    printf("\n===========================================================================\n");
-    printf("| %-5s | %-12s | %-20s | %-15s | %-6s |\n", "ID", "Ngay", "Danh muc", "So tien (VND)", "Loai");
-    printf("===========================================================================\n");
+    // In thanh tiêu đề của bảng với màu CYAN và YELLOW
+    printf(CYAN "\n===============================================================================\n" RESET);
+    printf(CYAN "|" YELLOW " %-5s " CYAN "|" YELLOW " %-12s " CYAN "|" YELLOW " %-20s " CYAN "|" YELLOW " %-15s " CYAN "|" YELLOW " %-6s " CYAN "|\n" RESET, 
+           "ID", "Ngay", "Danh muc", "So tien (VND)", "Loai");
+    printf(CYAN "===============================================================================\n" RESET);
 
-    // bắt đầu duyệt từ đầu danh sách (head)
     Node* current = head;
     while (current != NULL) {
-        // chuyển đổi type từ số (1, 0) sang chuỗi (Thu, Chi)
-        char typeStr[10];
+        // Tô màu dòng dữ liệu dựa vào Thu hay Chi
         if (current->data.type == 1) {
-            strcpy(typeStr, "Thu");
+            // Loại 1 (Thu): In chữ "Thu" và Số tiền màu XANH LÁ
+            printf(CYAN "|" RESET " %-5d " CYAN "|" RESET " %-12s " CYAN "|" RESET " %-20s " CYAN "|" GREEN " +%-14lld" CYAN "|" GREEN " %-6s " CYAN "|\n" RESET, 
+                   current->data.id, current->data.date, current->data.category, current->data.amount, "Thu");
         } else {
-            strcpy(typeStr, "Chi");
+            // Loại 0 (Chi): In chữ "Chi" và Số tiền màu ĐỎ
+            printf(CYAN "|" RESET " %-5d " CYAN "|" RESET " %-12s " CYAN "|" RESET " %-20s " CYAN "|" RED " -%-14lld" CYAN "|" RED " %-6s " CYAN "|\n" RESET, 
+                   current->data.id, current->data.date, current->data.category, current->data.amount, "Chi");
         }
-
+        current = current->next;
+    }
+    printf(CYAN "===============================================================================\n" RESET);
+}
         // in thông tin của node hiện tại
         printf("| %-5d | %-12s | %-20s | %15lld | %-6s |\n", 
                current->data.id, 
@@ -320,17 +342,18 @@ void showStatistics(Node* head) {
     printf("========================================\n");
 }
 void showMenu() {
-    printf("\n========================================\n");
-    printf("      QUAN LY THU CHI CA NHAN\n");
-    printf("========================================\n");
-    printf("1. Them giao dich moi\n");
-    printf("2. Hien thi danh sach giao dich\n");
-    printf("3. Tim kiem giao dich\n");
-    printf("4. Xoa giao dich\n");
-    printf("5. Thong ke tong hop\n");
-    printf("6. Luu va Thoat\n");
-    printf("========================================\n");
-    printf("Chon chuc nang (1-6): ");
+    printf("\n");
+    printf(CYAN " ╔══════════════════════════════════════╗\n" RESET);
+    printf(CYAN " ║ " YELLOW BOLD "     QUAN LY THU CHI CA NHAN 2.0    " CYAN " ║\n" RESET);
+    printf(CYAN " ╠══════════════════════════════════════╣\n" RESET);
+    printf(CYAN " ║ " RESET " " GREEN "[1]" RESET " Them giao dich moi             " CYAN " ║\n" RESET);
+    printf(CYAN " ║ " RESET " " GREEN "[2]" RESET " Hien thi danh sach giao dich   " CYAN " ║\n" RESET);
+    printf(CYAN " ║ " RESET " " GREEN "[3]" RESET " Tim kiem giao dich             " CYAN " ║\n" RESET);
+    printf(CYAN " ║ " RESET " " GREEN "[4]" RESET " Xoa giao dich                  " CYAN " ║\n" RESET);
+    printf(CYAN " ║ " RESET " " GREEN "[5]" RESET " Thong ke tong hop              " CYAN " ║\n" RESET);
+    printf(CYAN " ║ " RESET " " RED   "[6]" RESET " Luu va Thoat                   " CYAN " ║\n" RESET);
+    printf(CYAN " ╚══════════════════════════════════════╝\n" RESET);
+    printf(YELLOW " => Nhap lua chon cua ban (1-6): " RESET);
 }
 
 int main() {
